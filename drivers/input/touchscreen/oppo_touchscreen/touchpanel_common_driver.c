@@ -96,6 +96,9 @@ static int pm_qos_state = 0;
 #define PM_QOS_TOUCH_WAKEUP_VALUE 400
 #endif
 
+uint8_t DouTap_enable = 0;				 // double tap
+uint8_t gesture_enable = 0;
+
 /*******Part2:declear Area********************************/
 static void speedup_resume(struct work_struct *work);
 static void lcd_trigger_load_tp_fw(struct work_struct *work);
@@ -462,60 +465,60 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
              gesture_info_temp.gesture_type == SingleTap ? "single tap" :
              gesture_info_temp.gesture_type == Heart ? "heart" : "unknown");
 
-    switch (gesture_info_temp.gesture_type) {
-        case DouTap:
-            enabled = DouTap_enable;
-            key = KEY_DOUBLE_TAP;
-            break;
-        case UpVee:
-            enabled = UpVee_enable;
-            key = KEY_GESTURE_UP_ARROW;
-            break;
-        case DownVee:
-            enabled = DownVee_enable;
-            key = KEY_GESTURE_DOWN_ARROW;
-            break;
-        case LeftVee:
-            enabled = LeftVee_enable;
-            key = KEY_GESTURE_LEFT_ARROW;
-            break;
-        case RightVee:
-            enabled = RightVee_enable;
-            key = KEY_GESTURE_RIGHT_ARROW;
-            break;
-        case Circle:
-            enabled = Circle_enable;
-            key = KEY_GESTURE_CIRCLE;
-            break;
-        case DouSwip:
-            enabled = DouSwip_enable;
-            key = KEY_GESTURE_TWO_SWIPE;
-            break;
-        case Left2RightSwip:
-            enabled = Left2RightSwip_enable;
-            key = KEY_GESTURE_SWIPE_LEFT;
-            break;
-        case Right2LeftSwip:
-            enabled = Right2LeftSwip_enable;
-            key = KEY_GESTURE_SWIPE_RIGHT;
-            break;
-        case Up2DownSwip:
-            enabled = Up2DownSwip_enable;
-            key = KEY_GESTURE_SWIPE_UP;
-            break;
-        case Down2UpSwip:
-            enabled = Down2UpSwip_enable;
-            key = KEY_GESTURE_SWIPE_DOWN;
-            break;
-        case Mgestrue:
-            enabled = Mgestrue_enable;
-            key = KEY_GESTURE_M;
-            break;
-        case Wgestrue:
-            enabled = Wgestrue_enable;
-            key = KEY_GESTURE_W;
-            break;
-    }
+	switch (gesture_info_temp.gesture_type) {
+		case DouTap:
+			enabled = DouTap_enable;
+			key = KEY_DOUBLE_TAP;
+			break;
+		case UpVee:
+		        enabled = gesture_enable;
+			key = KEY_GESTURE_UP_ARROW;
+			break;
+		case DownVee:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_DOWN_ARROW;
+			break;
+		case LeftVee:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_LEFT_ARROW;
+			break;
+		case RightVee:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_RIGHT_ARROW;
+			break;
+		case Circle:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_CIRCLE;
+			break;
+		case DouSwip:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_TWO_SWIPE;
+			break;
+		case Left2RightSwip:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_SWIPE_LEFT;
+			break;
+		case Right2LeftSwip:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_SWIPE_RIGHT;
+			break;
+		case Up2DownSwip:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_SWIPE_UP;
+			break;
+		case Down2UpSwip:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_SWIPE_DOWN;
+			break;
+		case Mgestrue:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_M;
+			break;
+		case Wgestrue:
+                        enabled = gesture_enable;
+			key = KEY_GESTURE_W;
+			break;
+	}
 
 #if GESTURE_COORD_GET
     if (ts->ts_ops->get_gesture_coord) {
@@ -541,7 +544,7 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
         if(ts->geature_ignore)
             return;
 #endif
-    if (enabled) {
+	if (enabled) {
             input_report_key(ts->input_dev, key, 1);
             input_sync(ts->input_dev);
             input_report_key(ts->input_dev, key, 0);
@@ -3761,18 +3764,7 @@ static const struct file_operations proc_touch_apk_fops = {
 	};
 
 GESTURE_ATTR(double_tap, DouTap_enable);
-GESTURE_ATTR(up_arrow, UpVee_enable);
-GESTURE_ATTR(down_arrow, DownVee_enable);
-GESTURE_ATTR(left_arrow, LeftVee_enable);
-GESTURE_ATTR(right_arrow, RightVee_enable);
-GESTURE_ATTR(double_swipe, DouSwip_enable);
-GESTURE_ATTR(up_swipe, Up2DownSwip_enable);
-GESTURE_ATTR(down_swipe, Down2UpSwip_enable);
-GESTURE_ATTR(left_swipe, Left2RightSwip_enable);
-GESTURE_ATTR(right_swipe, Right2LeftSwip_enable);
-GESTURE_ATTR(letter_o, Circle_enable);
-GESTURE_ATTR(letter_w, Wgestrue_enable);
-GESTURE_ATTR(letter_m, Mgestrue_enable);
+GESTURE_ATTR(gesture, gesture_enable);
 
 #define CREATE_PROC_NODE(PARENT, NAME, MODE) \
 	prEntry_tmp = proc_create(#NAME, MODE, PARENT, &NAME##_proc_fops); \
@@ -3857,18 +3849,7 @@ static int init_touchpanel_proc(struct touchpanel_data *ts)
     //proc files-step2-4:/proc/touchpanel/double_tap_enable (black gesture related interface)
     if (ts->black_gesture_support) {
         CREATE_GESTURE_NODE(double_tap);
-        CREATE_GESTURE_NODE(up_arrow);
-        CREATE_GESTURE_NODE(down_arrow);
-        CREATE_GESTURE_NODE(left_arrow);
-        CREATE_GESTURE_NODE(right_arrow);
-        CREATE_GESTURE_NODE(double_swipe);
-        CREATE_GESTURE_NODE(up_swipe);
-        CREATE_GESTURE_NODE(down_swipe);
-        CREATE_GESTURE_NODE(left_swipe);
-        CREATE_GESTURE_NODE(right_swipe);
-        CREATE_GESTURE_NODE(letter_o);
-        CREATE_GESTURE_NODE(letter_w);
-        CREATE_GESTURE_NODE(letter_m);
+        CREATE_GESTURE_NODE(gesture);
 
         prEntry_tmp = proc_create_data("coordinate", 0444, prEntry_tp, &proc_coordinate_fops, ts);
         if (prEntry_tmp == NULL) {
@@ -5348,7 +5329,6 @@ static int init_input_device(struct touchpanel_data *ts)
 #endif //end of CONFIG_OPPO_TP_APK
         set_bit(KEY_GESTURE_W, ts->input_dev->keybit);
         set_bit(KEY_GESTURE_M, ts->input_dev->keybit);
-        set_bit(KEY_GESTURE_S, ts->input_dev->keybit);
         set_bit(KEY_DOUBLE_TAP, ts->input_dev->keybit);
         set_bit(KEY_GESTURE_CIRCLE, ts->input_dev->keybit);
         set_bit(KEY_GESTURE_TWO_SWIPE, ts->input_dev->keybit);
