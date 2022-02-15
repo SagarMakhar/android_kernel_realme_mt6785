@@ -74,21 +74,6 @@ unsigned int tp_register_times = 0;
 struct touchpanel_data *g_tp = NULL;
 static DECLARE_WAIT_QUEUE_HEAD(waiter);
 
-uint8_t DouTap_enable = 0;				 // double tap
-uint8_t UpVee_enable  = 0;				 // V
-uint8_t DownVee_enable  = 0;			 // ^
-uint8_t LeftVee_enable = 0; 			 // >
-uint8_t RightVee_enable = 0;			 // <
-uint8_t Circle_enable = 0;				 // O
-uint8_t DouSwip_enable = 0; 			 // ||
-uint8_t Left2RightSwip_enable = 0;		 // -->
-uint8_t Right2LeftSwip_enable = 0;		 // <--
-uint8_t Up2DownSwip_enable = 0;			 // |v
-uint8_t Down2UpSwip_enable = 0;			 // |^
-uint8_t Mgestrue_enable = 0;			 // M
-uint8_t Wgestrue_enable = 0;			 // W
-uint8_t Enable_gesture = 0;
-
 #ifdef CONFIG_TOUCHIRQ_UPDATE_QOS
 static struct pm_qos_request pm_qos_req;
 static int pm_qos_value = PM_QOS_DEFAULT_VALUE;
@@ -517,6 +502,22 @@ static void tp_gesture_handle(struct touchpanel_data *ts)
 		case Wgestrue:
                         enabled = gesture_enable;
 			key = KEY_GESTURE_W;
+			break;
+		case FingerprintDown:
+			enabled = gesture_enable;
+			key = KEY_GESTURE_FP_DOWN;
+			break;
+		case FingerprintUp:
+			enabled = gesture_enable;
+			key = KEY_GESTURE_FP_UP;
+			break;
+		case SingleTap:
+			enabled = gesture_enable;
+			key = KEY_GESTURE_SINGLE_TAP;
+			break;
+		case Heart:
+			enabled = gesture_enable;
+			key = KEY_GESTURE_HEART;
 			break;
 	}
 
