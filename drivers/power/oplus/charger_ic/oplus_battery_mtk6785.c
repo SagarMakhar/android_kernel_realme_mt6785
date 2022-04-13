@@ -5301,7 +5301,9 @@ static int mt_usb_get_property(struct power_supply *psy,
 				val->intval = CHARGER_SUBTYPE_DEFAULT;
 			}
 			break;
-
+                case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+                        val->intval = battery_get_vbus();
+                        break;
 		default:
 			rc = oplus_usb_get_property(psy, psp, val);
 	}
@@ -5565,6 +5567,7 @@ static enum power_supply_property mt_usb_properties[] = {
 	POWER_SUPPLY_PROP_USBTEMP_VOLT_L,
 	POWER_SUPPLY_PROP_USBTEMP_VOLT_R,
 	POWER_SUPPLY_PROP_FAST_CHG_TYPE,
+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 };
 
 static enum power_supply_property battery_properties[] = {
